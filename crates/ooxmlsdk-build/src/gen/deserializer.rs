@@ -512,12 +512,18 @@ pub fn gen_deserializer(schema: &OpenXmlSchema, context: &GenContext) -> TokenSt
             if with_xmlns {
               match e.name().as_ref() {
                 #( #child_ser_match_list )*
-                _ => Err(crate::common::SdkError::CommonError(#t_name_str.to_string()))?,
+                _ => {
+                  // skip if unknonwn field detected in loose mode
+                  let _next_event = xml_reader.next()?;
+                },
               }
             } else {
               match e.name().local_name().as_ref() {
                 #( #child_de_match_list )*
-                _ => Err(crate::common::SdkError::CommonError(#t_name_str.to_string()))?,
+                _ => {
+                  // skip if unknonwn field detected in loose mode
+                  let _next_event = xml_reader.next()?;
+                },
               }
             }
           }
